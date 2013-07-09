@@ -26,7 +26,7 @@ main(int argc, char** argv)
 	int sample_size; /* arg1 */
 	const double TWO_PI = 2*M_PI;
 	double frequency; /* arg2 */
-	double sample;
+	float sample;
 	double sample_rate; /* arg3 */
 	double angleincr;
 	
@@ -58,6 +58,7 @@ main(int argc, char** argv)
 
 			default:
 			printf("%s\n", HELP_STR);
+			fprintf(stderr, "Non-valid option");
 			exit(EXIT_FAILURE);
 		}	
 	}
@@ -72,11 +73,12 @@ main(int argc, char** argv)
 	frequency = atof(argv[optind++]);
 	sample_rate = atof(argv[optind]);
 	angleincr = TWO_PI * frequency / sample_rate;
-
+	printf("%ld\n", sizeof(double));
 	for (int i = 0; i < sample_size; i++) 
 	{
 		sample = sin(angleincr*i);
-		printf("%.8f\n", sample);
+		//printf("%.8f\n", sample);
+		write(STDOUT_FILENO, &sample, sizeof(sample));
 	}
 	exit(EXIT_SUCCESS);
 }
