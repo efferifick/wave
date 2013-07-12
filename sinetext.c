@@ -11,6 +11,7 @@
 const static char* HELP_STR = "sinetext #_of_samples" 
 				"#_of_frequency_in_Hz #_of_sample_rate";
 const static char* VERSION_STR = "sinetext version 0.01";
+const static double TWO_PI = 2*M_PI;
 
 static int verbose = 0;
 
@@ -18,17 +19,19 @@ static int verbose = 0;
  * you need... sample, freq, samplerate...
  *
  */
+
+void iterate_over_samples(int, double, double);
+void print_sample(double, int);
+
 int
 main(int argc, char** argv)
 {
 	int c;
 	int optindex =  0;
 	int sample_size; /* arg1 */
-	const double TWO_PI = 2*M_PI;
 	double frequency; /* arg2 */
-	float sample;
 	double sample_rate; /* arg3 */
-	double angleincr;
+	FILE *f;
 	
 
 	const struct option long_opts[] = 
@@ -63,22 +66,39 @@ main(int argc, char** argv)
 		}	
 	}
 
-	if ((argc - optind) != 3)
-	{
-		printf("%s\n", HELP_STR);
-		exit(EXIT_FAILURE);
+	if ((argc - optind) == 0) {
+		//get input from stdin...
+		f = stdin;
+	} else {
+		f = fopen(argv[optind], "r");
 	}
 
-	sample_size = atoi(argv[optind++]);
-	frequency = atof(argv[optind++]);
-	sample_rate = atof(argv[optind]);
-	angleincr = TWO_PI * frequency / sample_rate;
-	printf("%ld\n", sizeof(double));
-	for (int i = 0; i < sample_size; i++) 
-	{
-		sample = sin(angleincr*i);
-		//printf("%.8f\n", sample);
-		write(STDOUT_FILENO, &sample, sizeof(sample));
+	//sample_size = atoi(argv[optind++]);
+	sample_size = 12000; //This should be the new default.
+	//frequency = atof(argv[optind++]); This should now be the only input
+	//i get it at the while loop
+	//sample_rate = atof(argv[optind]);
+	sample_rate = 48000;
+
+
+	char buf[1024];
+	while(fgets(buf, sizeof(buf), f)) {
+		frequency = atof(buf);
+		iterate_over_samples(sample_size, frequency, sample_rate);
 	}
+
 	exit(EXIT_SUCCESS);
+}
+
+void iterate_over_samples(int sample_size, double frequency, double sample_rate)
+{
+	double angleincr = TWO_PI * frequency / sample_rate;
+	for(int i = 0; i < sample_size; i++)
+		print_sample(angleincr, i);
+}
+
+void print_sample(double angleincr, int i)
+{
+	float sample = sin(angleincr*i);
+	write(STDOUT_FILENO, &sample, sizeof(sample));
 }
