@@ -1,7 +1,7 @@
-# Compiling
+## Compiling
 	gcc -Wall -std=c99 -o wave wave.c -lm
 
-# Usage
+## Usage
 	wave FREQ
 
 Where frequency is to be casted to a double. It will be the frequency played.
@@ -12,7 +12,7 @@ take different sampling rates and outputs variable samples.
 The output is given by a float. This is done so that we can play its output
 with the standard audio format PCM 32 bytes.
 
-# Example to produce sound
+## Example to produce sound
 
 	m4 -R music.m4f -Q littlelamb.txt | ./wave | aplay -f FLOAT_LE -r 48000 -c 1 -q
 
