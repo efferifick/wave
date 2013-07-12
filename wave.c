@@ -74,16 +74,17 @@ main(int argc, char** argv)
 	}
 
 	//sample_size = atoi(argv[optind++]);
-	sample_size = 12000; //This should be the new default.
+	sample_size = 12000; //This should be the new default? Or another argument.
+	//I feel like this should be an argument and not an option.
 	//frequency = atof(argv[optind++]); This should now be the only input
 	//i get it at the while loop
 	//sample_rate = atof(argv[optind]);
-	sample_rate = 48000;
+	sample_rate = 48000; //This is also a default option.
 
 
 	char buf[1024];
 	while(fgets(buf, sizeof(buf), f)) {
-		frequency = atof(buf);
+		sscanf(buf, "%d %lf", &sample_size, &frequency);
 		iterate_over_samples(sample_size, frequency, sample_rate);
 	}
 
