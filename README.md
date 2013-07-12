@@ -14,6 +14,6 @@ with the standard audio format PCM 32 bytes.
 
 ## Example to produce sound
 
-	m4 -R music.m4f -Q littlelamb.txt | ./wave | aplay -f FLOAT_LE -r 48000 -c 1 -q
+	m4 -R music.m4f -Q littlelamb.txt |awk '{$1 = $1*48000}' | ./wave | aplay -f FLOAT_LE -r 48000 -c 1 -q
 
 Please select proper aplay endianness for your machine. 
