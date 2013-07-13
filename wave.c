@@ -3,6 +3,7 @@
 #include <math.h>
 #include <unistd.h>
 #include <getopt.h>
+#include <string.h>
 
 #ifndef M_PI
 #define M_PI (3.141592654)
@@ -20,8 +21,12 @@ static int verbose = 0;
  *
  */
 
-void iterate_over_samples(int, double, double);
-void print_sample(double, int);
+//void iterate_over_samples(int, double, double);
+float get_sample(double, double, int);
+void print_array(double*, int);
+void fill_array(double*, int);
+void free_array(double*, int);
+
 
 int
 main(int argc, char** argv)
@@ -29,7 +34,6 @@ main(int argc, char** argv)
 	int c;
 	int optindex =  0;
 	int sample_size; /* arg1 */
-	double frequency; /* arg2 */
 	double sample_rate; /* arg3 */
 	FILE *f;
 	
@@ -81,25 +85,74 @@ main(int argc, char** argv)
 	//sample_rate = atof(argv[optind]);
 	sample_rate = 48000; //This is also a default option.
 
-
-	char buf[1024];
+	double frequencies[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	char buf[1024]; // would be better if we got rid of this arbitrary
+	//limit
 	while(fgets(buf, sizeof(buf), f)) {
-		sscanf(buf, "%d %lf", &sample_size, &frequency);
-		iterate_over_samples(sample_size, frequency, sample_rate);
+		char* tok = NULL;
+		tok = strtok(buf, " ");
+		sample_size = atoi(tok);
+		fill_array(frequencies, 10);
+		for(int i = 0; i < sample_size; i++)
+		{
+			int j = 0;
+			float sample = 0;
+			while((frequencies[j] != 0))
+			{
+				sample += get_sample(frequencies[j], sample_rate, i);
+				//fprintf(stderr, "%lf\n", frequencies[j]);
+				j++;
+			}
+			sample /= j;
+			write(STDOUT_FILENO, &sample, sizeof(sample));
+		}
+		//iterate_over_samples(sample_size, frequency, sample_rate);
+		free_array(frequencies, 10);
 	}
 
 	exit(EXIT_SUCCESS);
 }
-
+/*
 void iterate_over_samples(int sample_size, double frequency, double sample_rate)
 {
 	double angleincr = TWO_PI * frequency / sample_rate;
 	for(int i = 0; i < sample_size; i++)
 		print_sample(angleincr, i);
+}*/
+
+float get_sample(double frequency, double rate, int sample_number)
+{
+	double angleincr = TWO_PI * frequency / rate;
+	return (float) sin(angleincr*sample_number);
 }
 
-void print_sample(double angleincr, int i)
+void
+print_array(double *freq_arr, int len)
 {
-	float sample = sin(angleincr*i);
-	write(STDOUT_FILENO, &sample, sizeof(sample));
+	for (int i = 0; i < len; i++)
+		fprintf(stderr, "%lf\n", freq_arr[i]);
+}
+
+/*
+* We need to call strtok with good string before calling this function.
+*/
+void
+fill_array(double* freq_arr, int len)
+{
+	char* tok = NULL;
+	int i = 0;
+	tok = strtok(NULL, " ");
+	while((tok != NULL) && (i < len)) //if i < len then overflow
+	{
+		freq_arr[i] = atof(tok); //should check for errors
+		tok = strtok(NULL, " ");
+		i++;
+	}
+}
+
+void
+free_array(double *freq_arr, int len)
+{
+	for (int i = 0; i < len; i++)
+		freq_arr[i] = 0;
 }
