@@ -103,7 +103,7 @@ main(int argc, char** argv)
 				//fprintf(stderr, "%lf\n", frequencies[j]);
 				j++;
 			}
-			sample /= j;
+			sample /= ++j;
 			write(STDOUT_FILENO, &sample, sizeof(sample));
 		}
 		//iterate_over_samples(sample_size, frequency, sample_rate);
