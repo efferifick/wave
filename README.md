@@ -1,6 +1,6 @@
 ## Compiling
 ```bash
-	gcc -Wall -std=c99 -o wave wave.c -lm
+	gcc -Wall -std=c99 -o wave wave.c -lm -DNDEBUG
 ```
 
 ## Usage
