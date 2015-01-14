@@ -51,7 +51,7 @@ int get_all_frequencies(double*, int, char*);
 void calculate_sine_of(double* frequencies, int freq_quantity, double amplitude, long int samples, const long int rate);
 double get_sample(double frequency, int sample_location, const long int rate);
 
-int
+  int
 main(int argc, char** argv) 
 {
 
@@ -73,16 +73,16 @@ main(int argc, char** argv)
   double amplitude = 1;
   FILE* file = NULL;
 
-	const struct option long_opts[] = 
-	{
-		{"version", no_argument, 0, 'v'},
-		{"help", no_argument, 0, 'h'},
+  const struct option long_opts[] = 
+  {
+    {"version", no_argument, 0, 'v'},
+    {"help", no_argument, 0, 'h'},
     {"samples", required_argument, 0, 's'},
     {"rate", required_argument, 0, 'r'},
     {"amplitude", required_argument, 0, 'a'},
     {"file", required_argument, 0, 'f'},
-		{0, 0, 0, 0}
-	};
+    {0, 0, 0, 0}
+  };
 
 
   do {
@@ -157,15 +157,15 @@ main(int argc, char** argv)
     is_argin = true;
   }
 
-	if (is_stdin) {
-		//get input from stdin...
-		file = stdin;
+  if (is_stdin) {
+    //get input from stdin...
+    file = stdin;
     debug("using stdin");
-	} else if (is_filein) {
-		file = fopen(filename, "r");
+  } else if (is_filein) {
+    file = fopen(filename, "r");
     check(NULL != file, "fopen fails");
     debug("using a specified file");
-	} else if (is_argin) {
+  } else if (is_argin) {
     // write a temporary file that looks like the ones you are used to.
     // so... SAMPLES AMPLITUDE FREQ1 FREQ2 ...
     file = fopen("/tmp/wavetmpfile.txt", "w");
@@ -194,7 +194,7 @@ main(int argc, char** argv)
   // after this, we always take input from f, and we always have the rate in
   // rate.
   // samples and frequencies are read from f.
-  
+
   start_wave(file, rate);
 
   exit(EXIT_SUCCESS);
@@ -203,7 +203,7 @@ error:
   exit(EXIT_FAILURE);
 }
 
-void
+  void
 start_wave(FILE* file, const long int rate) 
 {
   char* buffer = NULL;
@@ -241,7 +241,7 @@ start_wave(FILE* file, const long int rate)
     endptr = NULL;
     samples = strtol(tok, &endptr, 10);
     check(0 == errno, "strtol sets errno to non zero");
-    
+
     // we could continue instead of ending. be more unixy.
     check(tok != endptr, "no integer found");
     check(0 < samples, "samples is zero or negative");
@@ -288,10 +288,10 @@ start_wave(FILE* file, const long int rate)
 
 error:
   exit(EXIT_FAILURE);
-  
+
 }
 
-int
+  int
 get_all_frequencies(double* frequencies, int max, char* line)
 {
   char* tok = NULL;
@@ -336,7 +336,7 @@ error:
 }
 
 
-void
+  void
 calculate_sine_of(double* frequencies, int freq_quantity, double amplitude, long int samples, const long int rate) 
 {
 
@@ -354,9 +354,9 @@ calculate_sine_of(double* frequencies, int freq_quantity, double amplitude, long
   }
 }
 
-double
+  double
 get_sample(double frequency, int sample_location, const long int rate) 
 {
-	double angleincr = TWO_PI * frequency / rate;
-	return sin(angleincr*sample_location);
+  double angleincr = TWO_PI * frequency / rate;
+  return sin(angleincr*sample_location);
 }
