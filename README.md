@@ -17,23 +17,56 @@ output to `aplay` or `sox` and be able to play music.
 ```
 
 ## Usage
-```bash
+```
   usage:
 	wave [options] [FREQ1 FREQ2 FREQ3 ..]
   options:
 
-  -a, --amplitude    takes an integer for the amplitude of the wave.
-                     defaults to 1.
-  -s, --samples      how many samples do we need?
-                     defaults to 48000. (one second).
-  -r, --rate         at what rate are we to sample?
-                     defaults to 48kHz.
-  -f, --file         do we want input from a file? if so, which one?
-  -h, --help         prints help
-  -v, --version      prints version
+  -h                    Prints out this message.
+  --help
 
-  If no frequencies are specified, it will take input from stdin. This is
-  useful for piping.
+  -v                    Prints out program version.
+  --version
+
+  -a DOUBLE             Sets amplitude value.
+  --amplitude DOUBLE    Default: 1.0
+
+  -r INT                Sets sampling rate.
+  --rate INT            Default: 48000 (Hz).
+
+  -s INT                Sets number of samples to be taken.
+  --samples INT         Defaults: 48000. (Equivalent to 1 second on default
+                          rate)
+
+  -f PATH               Sets input file.
+  --file PATH
+
+  NOTES:
+    For best results amplitude should be in the range of [0, 1].
+
+    If no arguments are given, input is expected from stdin. This is useful
+    for piping. Input is expected as though reading from a file. Ex.
+
+      \`\`\`
+        echo 48000 1.0 440 | ./wave | sox -t raw -r 48000 -e
+        floating-point -c 1 -b 32 - -tcoreaudio
+      \`\`\`
+
+    If reading from a file or stdin, the program expects this input format.
+
+      \`\`\`
+        <SAMPLES> <AMPLITUDE> <FREQ1> <FREQ2> <...>
+        <SAMPLES> <AMPLITUDE> <FREQ1> <FREQ2> <...>
+        <SAMPLES> <AMPLITUDE> <FREQ1> <FREQ2> <...>
+      \`\`\`
+
+    Each line will output after the one before has run out of samples.
+
+    Get the source or file an issue at:
+      \`\`\`
+        https://github.com/efferifick/wave
+      \`\`\`
+
 ```
 
 If a file is specified, it needs to have the following format.
@@ -60,5 +93,4 @@ on mac:
 m4 -R ../music.m4f -Q ../chopsticks.txt | awk '{$1 = $1*48000; print $0}' | ./wave | sox -t raw -r 48000 -e floating-point -c 1 -b 32 - -tcoreaudio
 ```
 
-Please select proper aplay endianness for your machine. 
-
+Please select proper aplay endianness for your machine.

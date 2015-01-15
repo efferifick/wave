@@ -45,6 +45,54 @@
 #endif
 
 const static double TWO_PI = 2*M_PI;
+const static char* LONG_HELP_STR = "Outputs a binary sine wave with the specified frequencies.\n"
+"\n"
+"options:\n"
+"\n"
+"-h                    Prints out this message.\n"
+"--help\n"
+"\n"
+"-v                    Prints out program version.\n"
+"--version\n"
+"\n"
+"-a DOUBLE             Sets amplitude value.\n"
+"--amplitude DOUBLE    Default: 1.0\n"
+"\n"
+"-r INT                Sets sampling rate.\n"
+"--rate INT            Default: 48000 (Hz).\n"
+"\n"
+"-s INT                Sets number of samples to be taken.\n"
+"--samples INT         Defaults: 48000. (Equivalent to 1 second on default\n"
+"                      rate)\n"
+"\n"
+"-f PATH               Sets input file.\n"
+"--file PATH\n"
+"\n"
+"NOTES:\n"
+"  For best results amplitude should be in the range of [0, 1].\n"
+"\n"
+"  If no arguments are given, input is expected from stdin. This is useful\n"
+"  for piping. Input is expected as though reading from a file. Ex.\n"
+"\n"
+"    ```\n"
+"      echo 48000 1.0 440 | ./wave | sox -t raw -r 48000 -e\n"
+"      floating-point -c 1 -b 32 - -tcoreaudio\n"
+"    ```\n"
+"\n"
+"  If reading from a file or stdin, the program expects this input format.\n"
+"\n"
+"    ```\n"
+"      <SAMPLES> <AMPLITUDE> <FREQ1> <FREQ2> <...>\n"
+"      <SAMPLES> <AMPLITUDE> <FREQ1> <FREQ2> <...>\n"
+"      <SAMPLES> <AMPLITUDE> <FREQ1> <FREQ2> <...>\n"
+"    ```\n"
+"\n"
+"Each line will output after the one before has run out of samples.\n"
+"\n"
+"Get the source or file an issue at:\n"
+"  ```\n"
+"    https://github.com/efferifick/wave\n"
+"  ```\n";
 
 void start_wave(FILE* file, const long int rate);
 int get_all_frequencies(double*, int, char*);
@@ -52,7 +100,7 @@ void calculate_sine_of(double* frequencies, int freq_quantity, double amplitude,
 double get_sample(double frequency, int sample_location, const long int rate);
 
   int
-main(int argc, char** argv) 
+main(int argc, char** argv)
 {
 
   bool is_filein = false;
@@ -73,7 +121,7 @@ main(int argc, char** argv)
   double amplitude = 1;
   FILE* file = NULL;
 
-  const struct option long_opts[] = 
+  const struct option long_opts[] =
   {
     {"version", no_argument, 0, 'v'},
     {"help", no_argument, 0, 'h'},
@@ -89,34 +137,40 @@ main(int argc, char** argv)
 
     current_option = getopt_long(argc, argv, "whvs:r:a:f:", long_opts, &option_index);
 
-    switch (current_option) 
+    switch (current_option)
     {
       case -1:
         /* No more options. Leaves optind as the index of next argv */
         break;
       case 'h': /* Help */
-        retval = asprintf(&HELP_STR, "usage: %s\n", PRGM_NAME);
+        retval = asprintf(&HELP_STR, "usage:\n %s [options] [FREQ1 FREQ2 FREQ3 ..]\n %s",
+            PRGM_NAME, LONG_HELP_STR);
         check(0 != retval, "asprintf returns non zero");
         retval = fprintf(stdout, "%s", HELP_STR);
         check(0 < retval, "fprintf fails");
         free(HELP_STR);
+        exit(EXIT_SUCCESS);
         break;
       case 'v': /* Version */
-        retval = asprintf(&VERSION_STR, "%s version 0.02\n", PRGM_NAME);
+        retval = asprintf(&VERSION_STR, "%s 0.9\n"
+            "Copyright (c) 2015 Erick Eduardo Ochoa Lopez\n"
+            "License MIT : http://opensource.org/licenses/MIT\n"
+            , PRGM_NAME);
         check(0 != retval, "asprintf returns non zero");
         retval = fprintf(stdout, "%s", VERSION_STR);
         check(0 < retval, "fprintf fails");
         free(VERSION_STR);
+        exit(EXIT_SUCCESS);
         break;
-      case 's': /* Samples defaults to 48k (or 1 sec) */ 
-        endptr = NULL; 
+      case 's': /* Samples defaults to 48k (or 1 sec) */
+        endptr = NULL;
         samples = strtol(optarg, &endptr, 10);
         check(0 == errno, "strtol sets errno to non zero");
         check(endptr != optarg, "no number found");
         check(0 < samples, "zero or negative samples");
         debug("samples: %ld", samples);
         break;
-      case 'r': /* Rate defaults to 48 kHz */ 
+      case 'r': /* Rate defaults to 48 kHz */
         endptr = NULL;
         rate = strtol(optarg, &endptr, 10);
         check(0 == errno, "strtol sets errno to non zero");
@@ -204,7 +258,7 @@ error:
 }
 
   void
-start_wave(FILE* file, const long int rate) 
+start_wave(FILE* file, const long int rate)
 {
   char* buffer = NULL;
   char* buffercpy = NULL;
@@ -309,13 +363,13 @@ get_all_frequencies(double* frequencies, int max, char* line)
       tok = strtok_r(NULL, " \n", &savebuffer);
 
     // error checking the first one.
-    if ((count == 0) && (tok == NULL)) 
-    { 
+    if ((count == 0) && (tok == NULL))
+    {
       frequencies[count] = 0.0;
     }
 
     // parsing.
-    if (tok != NULL) 
+    if (tok != NULL)
     {
       frequency = strtod(tok, &endptr);
       check(0 == errno, "strtod sets errno to zero");
@@ -337,7 +391,7 @@ error:
 
 
   void
-calculate_sine_of(double* frequencies, int freq_quantity, double amplitude, long int samples, const long int rate) 
+calculate_sine_of(double* frequencies, int freq_quantity, double amplitude, long int samples, const long int rate)
 {
 
   double sample = 0.0;
@@ -355,7 +409,7 @@ calculate_sine_of(double* frequencies, int freq_quantity, double amplitude, long
 }
 
   double
-get_sample(double frequency, int sample_location, const long int rate) 
+get_sample(double frequency, int sample_location, const long int rate)
 {
   double angleincr = TWO_PI * frequency / rate;
   return sin(angleincr*sample_location);
