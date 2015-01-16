@@ -11,9 +11,16 @@ means that when you say something like
 You will only see gibberish. However, it is useful because you can pipe the
 output to `aplay` or `sox` and be able to play music.
 
-## Compiling
+## Installing
 ```bash
-	gcc -Wall -std=c99 -o wave wave.c -lm -DNDEBUG
+  git clone https://github.com/efferifick/wave
+  cd wave
+  make install
+```
+
+One can further specify install path by
+```
+make prefix=/path/to install
 ```
 
 ## Usage
@@ -47,35 +54,21 @@ output to `aplay` or `sox` and be able to play music.
     If no arguments are given, input is expected from stdin. This is useful
     for piping. Input is expected as though reading from a file. Ex.
 
-      \`\`\`
-        echo 48000 1.0 440 | ./wave | sox -t raw -r 48000 -e
+      
+        echo 48000 1.0 440 | ./wave | sox -t raw -r 48000 -e \
         floating-point -c 1 -b 32 - -tcoreaudio
-      \`\`\`
 
     If reading from a file or stdin, the program expects this input format.
 
-      \`\`\`
         <SAMPLES> <AMPLITUDE> <FREQ1> <FREQ2> <...>
         <SAMPLES> <AMPLITUDE> <FREQ1> <FREQ2> <...>
         <SAMPLES> <AMPLITUDE> <FREQ1> <FREQ2> <...>
-      \`\`\`
 
     Each line will output after the one before has run out of samples.
 
     Get the source or file an issue at:
-      \`\`\`
         https://github.com/efferifick/wave
-      \`\`\`
 
-```
-
-If a file is specified, it needs to have the following format.
-If the program is receiving input through stdin, it also needs the same format.
-
-```
-<SAMPLES> <AMPLITUDE> <FREQ1> <FREQ2> <...>
-<SAMPLES> <AMPLITUDE> <FREQ1> <FREQ2> <...>
-<SAMPLES> <AMPLITUDE> <FREQ1> <FREQ2> <...>
 ```
 
 The output is given by a float. This is done so that we can play its output
@@ -85,12 +78,17 @@ with the standard audio format PCM 32 bytes.
 
 on linux:
 ```bash
-m4 -R ../music.m4f -Q ../chopsticks.txt | awk '{$1 = $1*48000; print $0}' | ./wave | aplay -f FLOAT_LE -r 48000 -c 1 -q
+cd examples
+m4 -R music.m4f -Q chopsticks.txt | awk '{$1 = $1*48000; print $0}' | wave | aplay -f FLOAT_LE -r 48000 -c 1 -q
 ```
 
 on mac:
 ```bash
-m4 -R ../music.m4f -Q ../chopsticks.txt | awk '{$1 = $1*48000; print $0}' | ./wave | sox -t raw -r 48000 -e floating-point -c 1 -b 32 - -tcoreaudio
+cd examples
+m4 -R music.m4f -Q chopsticks.txt | awk '{$1 = $1*48000; print $0}' | wave | sox -t raw -r 48000 -e floating-point -c 1 -b 32 - -tcoreaudio
+```
+## Uninstalling
+```
+make uninstall
 ```
 
-Please select proper aplay endianness for your machine.

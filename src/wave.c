@@ -107,8 +107,6 @@ main(int argc, char** argv)
   bool is_stdin = false;
   bool is_argin = false;
   const char* PRGM_NAME = argv[0];
-  char* HELP_STR;
-  char* VERSION_STR;
   char* endptr = NULL;
   char* filename;
   int retval = 0;
@@ -135,7 +133,7 @@ main(int argc, char** argv)
 
   do {
 
-    current_option = getopt_long(argc, argv, "whvs:r:a:f:", long_opts, &option_index);
+    current_option = getopt_long(argc, argv, "hvs:r:a:f:", long_opts, &option_index);
 
     switch (current_option)
     {
@@ -143,23 +141,17 @@ main(int argc, char** argv)
         /* No more options. Leaves optind as the index of next argv */
         break;
       case 'h': /* Help */
-        retval = asprintf(&HELP_STR, "usage:\n %s [options] [FREQ1 FREQ2 FREQ3 ..]\n %s",
+        retval = printf("usage:\n %s [options] [FREQ1 FREQ2 FREQ3 ..]\n %s",
             PRGM_NAME, LONG_HELP_STR);
-        check(0 != retval, "asprintf returns non zero");
-        retval = fprintf(stdout, "%s", HELP_STR);
-        check(0 < retval, "fprintf fails");
-        free(HELP_STR);
+        check(0 < retval, "printf returns non zero");
         exit(EXIT_SUCCESS);
         break;
       case 'v': /* Version */
-        retval = asprintf(&VERSION_STR, "%s 0.9\n"
+        retval = printf("%s 0.9\n"
             "Copyright (c) 2015 Erick Eduardo Ochoa Lopez\n"
             "License MIT : http://opensource.org/licenses/MIT\n"
             , PRGM_NAME);
-        check(0 != retval, "asprintf returns non zero");
-        retval = fprintf(stdout, "%s", VERSION_STR);
-        check(0 < retval, "fprintf fails");
-        free(VERSION_STR);
+        check(0 < retval, "printf fails");
         exit(EXIT_SUCCESS);
         break;
       case 's': /* Samples defaults to 48k (or 1 sec) */
