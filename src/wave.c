@@ -44,8 +44,8 @@
 #define MAX_FREQS 10
 #endif
 
-const static double TWO_PI = 2*M_PI;
-const static char* LONG_HELP_STR = "Outputs a binary sine wave with the specified frequencies.\n"
+static const double TWO_PI = 2*M_PI;
+static const char* LONG_HELP_STR = "Outputs a binary sine wave with the specified frequencies.\n"
 "\n"
 "options:\n"
 "\n"
