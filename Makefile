@@ -1,5 +1,5 @@
-CFLAGS   = -Wall -std=c99
-CPPFLAGS = -DNDEBUG
+CFLAGS   = -Wall -Wextra -std=c99
+CPPFLAGS = -D_GNU_SOURCE -DNDEBUG
 LDFLAGS  = -lm
 
 INSTALL     = install
