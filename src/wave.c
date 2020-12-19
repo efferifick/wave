@@ -95,7 +95,7 @@ int get_all_frequencies(double*, int, char*);
 void calculate_sine_of(double* frequencies, int freq_quantity, double amplitude, long int samples, const long int rate);
 double get_sample(double frequency, int sample_location, const long int rate);
 
-  int
+int
 main(int argc, char** argv)
 {
 
